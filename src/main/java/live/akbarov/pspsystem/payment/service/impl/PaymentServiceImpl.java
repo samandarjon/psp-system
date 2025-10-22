@@ -26,6 +26,17 @@ class PaymentServiceImpl implements PaymentService {
     private final AcquirerRegistry acquirerRegistry;
     private final PaymentRepository paymentRepository;
 
+    /**
+     * {@inheritDoc}
+     * <p>
+     * This implementation follows these steps:
+     * <li>Save the payment request as a transaction with PENDING status</li>
+     * <li>Create a context with the transaction ID and request</li>
+     * <li>Find the appropriate acquirer using the routing strategy</li>
+     * <li>Send the payment to the acquirer</li>
+     * <li>Update the transaction with the acquirer's response</li>
+     * <li>Map the updated transaction to a payment response</li>
+     */
     @Override
     public Mono<PaymentResponse> pay(PaymentRequest request) {
         return paymentRepository.save(PaymentMapper.INSTANCE.toTransaction(request))
@@ -37,12 +48,24 @@ class PaymentServiceImpl implements PaymentService {
                 .map(PaymentMapper.INSTANCE::toPaymentResponse);
     }
 
+    /**
+     * {@inheritDoc}
+     * <p>
+     * This implementation retrieves the payment transaction from the repository
+     * and maps it to a payment response.
+     */
     @Override
     public Mono<PaymentResponse> getPayment(UUID id) {
         return paymentRepository.findById(id)
                 .map(PaymentMapper.INSTANCE::toPaymentResponse);
     }
 
+    /**
+     * Updates the transaction with the acquirer's response.
+     *
+     * @param context the context containing the transaction ID, request, acquirer, and acquirer response
+     * @return a Mono that emits the updated payment transaction
+     */
     private Mono<Payment> updateTransaction(Context context) {
         log.info("Transaction status updated: txId={}, acquirer={}, acquirerResponse={}",
                 context.transactionId(), context.acquirer(), context.acquirerResponse());
@@ -52,6 +75,12 @@ class PaymentServiceImpl implements PaymentService {
                 PaymentMapper.INSTANCE.toStatus(context.acquirerResponse().status()));
     }
 
+    /**
+     * Sends the payment to the acquirer and updates the context with the acquirer's response.
+     *
+     * @param context the context containing the transaction ID, request, and acquirer
+     * @return a Mono that emits the updated context with the acquirer's response
+     */
     private Mono<Context> acquirerPayment(Context context) {
         log.info("Acquiring payment: txId={}, acquirer={}", context.transactionId(), context.acquirer());
         return acquirerRegistry.get(context.acquirer())
@@ -59,6 +88,12 @@ class PaymentServiceImpl implements PaymentService {
                 .map(context::withAcquirerResponse);
     }
 
+    /**
+     * Finds the appropriate acquirer for the payment using the routing strategy.
+     *
+     * @param context the context containing the transaction ID and request
+     * @return a Mono that emits the updated context with the selected acquirer
+     */
     private Mono<Context> findAcquirer(Context context) {
         //We can filter our acquirer based health check or some admin config
         List<String> candidates = acquirerRegistry.allNames();

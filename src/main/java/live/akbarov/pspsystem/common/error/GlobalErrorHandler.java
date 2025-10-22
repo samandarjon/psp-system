@@ -52,6 +52,16 @@ public class GlobalErrorHandler {
         return ResponseEntity.badRequest().body(error);
     }
 
+    @ExceptionHandler(IdempotencyException.class)
+    public ResponseEntity<ApiError> handleIdempotencyException(IdempotencyException ex) {
+        return build(HttpStatus.CONFLICT, ex.getCode(), ex.getMessage());
+    }
+
+    @ExceptionHandler(RoutingException.class)
+    public ResponseEntity<ApiError> handleRoutingException(RoutingException ex) {
+        return build(HttpStatus.SERVICE_UNAVAILABLE, ex.getCode(), ex.getMessage());
+    }
+
     @ExceptionHandler(AppException.class)
     public ResponseEntity<ApiError> handleAcquirerException(AppException ex) {
         return build(HttpStatus.BAD_REQUEST, ex.getCode(), ex.getMessage());
