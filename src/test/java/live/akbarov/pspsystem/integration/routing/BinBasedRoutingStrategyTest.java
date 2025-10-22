@@ -1,4 +1,4 @@
-package live.akbarov.pspsystem.integration.payment.routing;
+package live.akbarov.pspsystem.integration.routing;
 
 
 import live.akbarov.pspsystem.common.exception.RoutingException;

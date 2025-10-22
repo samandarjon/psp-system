@@ -17,7 +17,7 @@ public interface PaymentService {
      * @param paymentRequest the payment request containing card details, amount, currency, and merchant ID
      * @return a Mono that emits the payment response with transaction ID and status
      */
-    Mono<PaymentResponse> pay(PaymentRequest paymentRequest);
+    Mono<PaymentResponse>   pay(PaymentRequest paymentRequest);
 
     /**
      * Retrieves a payment transaction by its ID.
