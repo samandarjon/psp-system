@@ -1,6 +1,7 @@
 package live.akbarov.pspsystem.payment.service.impl;
 
 
+import live.akbarov.pspsystem.common.exception.IdempotencyException;
 import live.akbarov.pspsystem.payment.service.IdempotencyService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.java.Log;
@@ -22,7 +23,7 @@ public class InMemoryIdempotencyService implements IdempotencyService {
         var compositeKey = key(idempotencyKey, merchantId);
         Boolean existing = usedKeys.putIfAbsent(compositeKey, Boolean.TRUE);
         if (existing != null) {
-            return Mono.error(new IllegalArgumentException("Duplicate request: Idempotency key already used"));
+            return Mono.error(new IdempotencyException("Duplicate request: Idempotency key already used"));
         }
         return Mono.just(Boolean.TRUE);
     }
