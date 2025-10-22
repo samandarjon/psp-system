@@ -3,6 +3,7 @@ package live.akbarov.pspsystem.payment.service.impl;
 
 import live.akbarov.pspsystem.payment.service.IdempotencyService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.java.Log;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
@@ -10,6 +11,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
+@Log
 @Service
 @RequiredArgsConstructor
 public class InMemoryIdempotencyService implements IdempotencyService {
@@ -29,6 +31,7 @@ public class InMemoryIdempotencyService implements IdempotencyService {
     @Override
     public void remove(UUID idempotencyKey, String merchantId) {
         var compositeKey = key(idempotencyKey, merchantId);
+        log.info("Removing Idempotency key: " + compositeKey);
         usedKeys.remove(compositeKey);
     }
 

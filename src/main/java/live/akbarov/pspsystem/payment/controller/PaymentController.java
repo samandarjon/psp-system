@@ -4,12 +4,12 @@ import jakarta.validation.Valid;
 import live.akbarov.pspsystem.payment.model.PaymentRequest;
 import live.akbarov.pspsystem.payment.model.PaymentResponse;
 import live.akbarov.pspsystem.payment.service.PaymentService;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
+
+import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
@@ -20,5 +20,10 @@ public class PaymentController {
     @PostMapping
     public Mono<PaymentResponse> createPayment(@Valid @RequestBody PaymentRequest request) {
         return paymentService.pay(request);
+    }
+
+    @GetMapping("/{id}")
+    public Mono<PaymentResponse> getPayment(@PathVariable UUID id) {
+        return paymentService.getPayment(id);
     }
 }

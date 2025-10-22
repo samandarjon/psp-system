@@ -12,6 +12,8 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
+import java.util.UUID;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -34,6 +36,11 @@ public class PrePaymentServiceImpl implements PaymentService {
                 .doOnSuccess(res ->
                         idempotencyService.remove(request.getIdempotencyKey(), request.getMerchantId())
                 );
+    }
+
+    @Override
+    public Mono<PaymentResponse> getPayment(UUID id) {
+        return paymentService.getPayment(id);
     }
 
     private Mono<PaymentRequest> validate(PaymentRequest request) {
