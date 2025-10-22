@@ -21,7 +21,7 @@ import java.util.UUID;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-class PaymentServiceImpl implements PaymentService {
+public class PaymentServiceImpl implements PaymentService {
     private final RoutingStrategy routingStrategy;
     private final AcquirerRegistry acquirerRegistry;
     private final PaymentRepository paymentRepository;
@@ -98,8 +98,7 @@ class PaymentServiceImpl implements PaymentService {
         //We can filter our acquirer based health check or some admin config
         List<String> candidates = acquirerRegistry.allNames();
         log.info("Finding acquirer: txId={}, candidates={}", context.transactionId(), candidates);
-        return routingStrategy.route(context.request(), acquirerRegistry.allNames())
-                .map(context::withAcquirer);
+        return routingStrategy.route(context.request(), candidates).map(context::withAcquirer);
     }
 
     @With

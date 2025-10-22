@@ -1,6 +1,6 @@
 package live.akbarov.pspsystem.acquirer;
 
-import live.akbarov.pspsystem.common.exception.AppException;
+import live.akbarov.pspsystem.common.exception.AcquirerException;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -21,7 +21,7 @@ public class AcquirerRegistry {
 
     public AcquirerClient get(String name) {
         return Optional.ofNullable(byName.get(name))
-                .orElseThrow(() -> new AppException("ACQUIRER_ERROR", "No acquirer client with name " + name));
+                .orElseThrow(() -> new AcquirerException("No acquirer client with name " + name));
     }
 
     public List<String> allNames() {
